@@ -1,6 +1,6 @@
 .. include:: <isonum.txt>
 
-.. _ch8_searchsort:
+.. _ch_searchsort:
 
 Searching and Sorting
 =====================

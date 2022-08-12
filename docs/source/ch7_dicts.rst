@@ -1,6 +1,6 @@
 .. include:: <isonum.txt>
 
-.. _ch7_dicts:
+.. _ch_dict:
 
 Dictionaries
 ============

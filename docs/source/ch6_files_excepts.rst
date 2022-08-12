@@ -1,6 +1,6 @@
 .. include:: <isonum.txt>
 
-.. _ch6_files_excepts:
+.. _ch_files_excepts:
 
 Files and Exceptions
 ====================

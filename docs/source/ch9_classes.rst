@@ -1,6 +1,6 @@
 .. include:: <isonum.txt>
 
-.. _ch9_classes:
+.. _ch_classes:
 
 Classes, Object-Orientation, and Pygame
 =======================================
