@@ -413,7 +413,114 @@ To draw a rectangle, do this:
 Knowing what you now know about drawing lines and ellipses, can you draw
 the face in Figure :numref:`%s <fig_pre_flip>`?  Give it a try!
 
-FIXME draw images (FG, BG)
+How did you do?  Did you realize you needed to create a yellow color first?
+Then, did you notice that the yellow circle had a black border around it?
+
+Here is one way you could have drawn the face.  Notice line 8 that
+defines ``yellow``.  Then, notice lines 32 - 33.  To get a yellow
+circle with a black border, we actually draw the circle twice.  First,
+we draw the yellow circle using ``pygame.draw.ellipse``.  Then, we draw
+the same circle over the top, only this time we only draw a black border.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 8,32,33
+
+   import pygame
+   from pygame.locals import *
+
+   pygame.init()
+
+   white = (255, 255, 255)
+   black = (0, 0, 0)
+   yellow = (255, 255, 0)
+
+   screenwidth = 800
+   screenheight = 600
+   screensize = [screenwidth, screenheight]
+   screen = pygame.display.set_mode(screensize)
+   pygame.display.set_caption("WINDOW TITLE HERE")
+
+   clock = pygame.time.Clock()
+
+   done = False
+
+   while not done:
+       # 1. Process events
+       for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+               done = True
+   
+       # 2. Program logic, change variables, etc.
+   
+       # 3. Draw stuff
+       screen.fill(white)
+
+       # Draw the head
+       pygame.draw.ellipse(screen, yellow, [50, 50, 400, 400], 0)
+       pygame.draw.ellipse(screen, black, [50, 50, 400, 400], 2)
+   
+       # Draw the eyes
+       pygame.draw.ellipse(screen, black, [145, 145, 50, 50], 0)
+       pygame.draw.ellipse(screen, black, [300, 145, 50, 50], 0)
+
+       # Draw the mouth
+       pygame.draw.line(screen, black, [175, 340], [325, 340], 6)
+
+       pygame.display.flip()
+       clock.tick(20)
+   
+   pygame.quit()
+
+Drawing lines, ellipses, and rectangles is a tedious exercise, but it's
+worth doing to get a sense of how to draw primitive graphics on an
+X/Y coordinate surface.  As we progress through this chapter, we will
+find easier ways of dealing with drawing graphics, so keep reading!
+
+The next thing we will learn to do is to take an image in a file and
+draw it on the screen.  First, find an image you like.  I'm going to use
+the one shown in Figure :numref:`%s <fig_niccage>`, which you can download
+`here <https://raw.githubusercontent.com/jbshep/conversational-python/master/docs/source/images/ch9/niccage_rabbit.png>`_.  If you use this image, note that
+the image's filename is ``niccage_rabbit.png``.
+
+.. _fig_niccage:
+.. figure:: images/ch9/niccage_rabbit.png
+   :scale: 100 %
+   :alt: Behold! Nicolas Cage as a rabbit!
+
+   Behold! Nicolas Cage as a rabbit!
+
+Ensure that your image is located in the same folder as your code.  This is
+very important.  Then, you can use the following code to draw the image
+onto the screen.
+
+.. code-block:: python
+
+   niccage = pygame.image.load("niccage_rabbit.png")
+   screen.blit(niccage, [5, 10])
+
+This code first loads the image into a variable named ``niccage``.  Then
+We "blit" the image onto the screen at coordinates ``[5, 10]`` or wherever
+we would like our image to appear.  "Blit" stands for "Block Transfer" and
+it is how we copy the contents of one surface onto another.  The image
+stored in our ``niccage`` variable is technically of type ``Surface``, just
+like our ``screen``.
+
+If you find an image that you want to use is too big or too small, it's best
+to use an image editing program to resize it, like Photoshop or Illustrator
+(or Microsoft Paint, egads!).  Resizing images in code is cumbersome and
+can be costly when we have fairly sophisticated graphical programs.
+
+If you want to draw a background image, you'll simply want to make sure
+the image fills up the screen, and then you'll want to draw it at position
+``[0, 0]`` so that it fits nicely up against the upper left corner of the
+screen. 
+
+There is one more important point to realize.  Graphics appear in the order
+they are drawn in your code.  If you draw one graphical object A and then
+another graphical object B that overlaps A, B will appear on top of A.  Thus,
+if you want to have background with images drawn on top of it, you would
+need to draw the background first, and then draw the other images afterwards.
 
 
 .. _sec_animation:
