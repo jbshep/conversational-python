@@ -46,7 +46,7 @@ point, you may wish to solicit help from the nearest knowledgeable, techie human
 
 Assuming everything worked, it's time to write code that uses Pygame!
 
-.. _sec_basic_graffiti:
+.. _sec_pygame_basics:
 
 Basic Pygame: Drawing Graffiti
 ------------------------------
@@ -102,6 +102,7 @@ Listing :numref:`%s <pygame_template>` section by section.
        pygame.draw.line(screen, green, [100, 200], [150, 300], 3)
        pygame.draw.line(screen, green, [150, 300], [200, 200], 3)
    
+       # Flip the buffer and do short delay to maintain framerate
        pygame.display.flip()
        clock.tick(20)
    
@@ -324,6 +325,7 @@ Close to the end of the loop body are the following two statements.
 
 .. code-block:: python
 
+   # Flip the buffer and do short delay to maintain framerate
    pygame.display.flip()
    clock.tick(20)
 
@@ -416,15 +418,18 @@ the face in Figure :numref:`%s <fig_pre_flip>`?  Give it a try!
 How did you do?  Did you realize you needed to create a yellow color first?
 Then, did you notice that the yellow circle had a black border around it?
 
-Here is one way you could have drawn the face.  Notice line 8 that
-defines ``yellow``.  Then, notice lines 32 - 33.  To get a yellow
-circle with a black border, we actually draw the circle twice.  First,
-we draw the yellow circle using ``pygame.draw.ellipse``.  Then, we draw
-the same circle over the top, only this time we only draw a black border.
+Here is one way you could have drawn the face (see Listing
+:numref:`%s <draw_face>`).  Notice line 8 that defines ``yellow``.  Then,
+notice lines 32 - 33.  To get a yellow circle with a black border, we
+actually draw the circle twice.  First, we draw the yellow circle using
+``pygame.draw.ellipse``.  Then, we draw the same circle over the top, only
+this time we only draw a black border.
 
+.. _draw_face:
 .. code-block:: python
    :linenos:
    :emphasize-lines: 8,32,33
+   :caption: Drawing a face
 
    import pygame
    from pygame.locals import *
@@ -467,6 +472,7 @@ the same circle over the top, only this time we only draw a black border.
        # Draw the mouth
        pygame.draw.line(screen, black, [175, 340], [325, 340], 6)
 
+       # Flip the buffer and do short delay to maintain framerate
        pygame.display.flip()
        clock.tick(20)
    
@@ -523,12 +529,621 @@ if you want to have background with images drawn on top of it, you would
 need to draw the background first, and then draw the other images afterwards.
 
 
-.. _sec_animation:
+.. _sec_anim_pt1:
 
-Animation
--------------------
+Animation, Part 1
+-----------------
 
-FIXME do move face and then bounce face
+In the previous section, we briefly introduced the notion of animation.
+To animate graphics, we simply draw graphical objects at different coordinates
+on the screen, each time after a slight delay.  A person's vision interprets
+images drawn at slightly different locations over time as movement. 
+
+To get a sense of how we will do animation, let's revisit our game loop.
+The game loop looks something like this (with most of the code omitted):
+
+.. code-block:: python
+
+   while not done:
+       # 1. Process events
+   
+       # 2. Program logic, change variables, etc.
+
+       # 3. Draw stuff
+   
+
+       # Flip the buffer and do short delay to maintain framerate
+       pygame.display.flip()
+       clock.tick(20)
+
+In Section :numref:`%s <sec_pygame_basics>`, we had code for part 1 and part 3
+of the loop, but nothing for part 2.  In this section, we will add code to parts
+1 and 2 to move our graphical objects and start to detect collisions.
+
+First, we will animate graphics using keystrokes.  Specifically, when the user
+presses an arrow key, we will move the face in that direction.  After we have
+figured that out, in Section :numref:`%s <sec_anim_pt2>` we will animate
+graphics automatically without any kind of user intervention.
+
+Let's use Listing :numref:`%s <draw_face>` as our starting point, which was the
+code where we drew a face with eyes and a mouth on the screen.  Let's see
+if we can make the face move using the arrow keys.
+
+If we are going to draw the face in different locations on the screen based on
+presses of the arrow keys, we'll want to keep track of where the face is
+currently.  This will require some variables.  Let's create variables named
+``facex`` and ``facey`` to track the X and Y location of upper left corner of the
+face.  Let's create those variables near the top of our program where we
+create other variables but before the ``while`` loop.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 18,19
+   :caption: Introducing ``facex`` and ``facey`` variables
+
+   import pygame
+   from pygame.locals import *
+
+   pygame.init()
+
+   white = (255, 255, 255)
+   black = (0, 0, 0)
+   yellow = (255, 255, 0)
+
+   screenwidth = 800
+   screenheight = 600
+   screensize = [screenwidth, screenheight]
+   screen = pygame.display.set_mode(screensize)
+   pygame.display.set_caption("WINDOW TITLE HERE")
+
+   clock = pygame.time.Clock()
+
+   facex = 50
+   facey = 50
+
+   done = False
+
+   # THE REST OF THE CODE IS OMITTED FOR NOW...
+
+``facex`` and ``facey`` represent the "state" of the program.  When we
+try to build video games, we will talk often about the game's state,
+which is always managed through a series of variables that change during
+the game loop.
+
+I've decided to keep the face at coordinates ``[50,50]`` for now.  Now, let's
+adjust our drawing code to draw the face using our variables.  Thus, our drawing
+code changes from this:
+
+.. code-block:: python
+
+   # Draw the head
+   pygame.draw.ellipse(screen, yellow, [50, 50, 400, 400], 0)
+   pygame.draw.ellipse(screen, black, [50, 50, 400, 400], 2)
+
+to this:
+
+.. code-block:: python
+
+   # Draw the head
+   pygame.draw.ellipse(screen, yellow, [facex, facey, 400, 400], 0)
+   pygame.draw.ellipse(screen, black, [facex, facey, 400, 400], 2)
+
+If we run our code now, we won't see any difference, which is good!  The
+code still draws the face in the same location.  It's just using variables
+to decide where to draw the face now.
+
+Okay, let's change the values of ``facex`` and ``facey`` whenever the user
+presses and arrow key.  To set this up, let's create a function whose job
+it is to handle key presses.  We will name it ``handle_keys``.
+
+.. code-block:: python
+
+   def handle_keys():
+       global facex, facey
+       keys = pygame.key.get_pressed()
+
+       # FIXME do something with the key presses
+
+And then down in the ``while`` loop in part 1 of the loop body, we will call
+``handle_keys`` every time we re-enter the loop:
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 7
+
+   while not done:
+       # 1. Process events
+       for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+               done = True
+
+       handle_keys()
+
+If we look at the definition of the ``handle_keys`` function, we might wonder
+what the ``keys`` variable is -- the one we are creating using
+``pygame.key.get_pressed()``.  The ``keys`` variables is actually a really
+big ``list`` of ``bool`` values.  It might look something like this:
+
+.. code-block:: python
+
+   [False, False, True, False, ..., False]
+
+Each index represents a different key on the keyboard.  So, which index
+represents the left arrow?  Which one represents the "J" key?  What about the
+space bar?  Well, fortunately, there are a series of variables that tell us
+what the index of left arrow is, for example, and we already imported those
+variables at the top of our program when we did this:
+
+.. code-block:: python
+
+   from pygame.locals import *
+
+The names of the variables we're describing all start with ``K_``.  For example,
+``K_LEFT`` is the left arrow.  ``K_SPACE`` is the space bar.  ``K_a`` is
+the "A" key.  So, if we want to know if the left arrow is pressed, we might 
+examine the expression ``keys[K_LEFT]`` to see if it's ``True`` or ``False``.
+
+Thus, if we want the left arrow to change the face's X coordinate but subtracting
+pixels from it, we might do something like this:
+
+.. code-block:: python
+
+   def handle_keys():
+       global facex, facey
+       keys = pygame.key.get_pressed()
+
+       if keys[K_LEFT]:
+           # move the face to the left
+           facex -= 5
+
+Splendid.  Let's keep going.  Based on this kind of logic, can you continue
+adding code so that the remaining arrow keys have their desired effect?
+
+Try it.  I'll wait.
+
+Okay, how'd you do?
+
+Listing :numref:`%s <handle_keys_1>` offers a solution:
+
+.. _handle_keys_1:
+.. code-block:: python
+   :linenos:
+   :caption: ``handle_keys`` function, attempt 1
+
+   def handle_keys():
+       global facex, facey
+       keys = pygame.key.get_pressed()
+
+       if keys[K_LEFT]:
+           # move the face to the left
+           facex -= 5
+       if keys[K_RIGHT]:
+           # move the face to the right
+           facex += 5
+       if keys[K_UP]:
+           # move the face up
+           facey -= 5
+       if keys[K_DOWN]:
+           # move the face down
+           facey += 5
+
+Why did I use ``if`` rather than ``elif`` for each subsequent arrow key?
+Realize that a user could simultaneously press the DOWN and RIGHT arrow
+keys to attempt to move diagonally down and right.  If we used ``elif`` on
+lines 8 and 14, line 8 would be ``True`` and we would never reach line 14.
+
+Let's put all of this code together in Listing :numref:`%s <move_face_1>`.
+
+.. _move_face_1:
+.. code-block:: python
+   :caption: Moving a face with arrow keys, attempt 1
+
+   import pygame
+   from pygame.locals import *
+   
+   pygame.init()
+   
+   white = (255, 255, 255)
+   black = (0, 0, 0)
+   yellow = (255, 255, 0)
+   
+   screenwidth = 800
+   screenheight = 600
+   screensize = [screenwidth, screenheight]
+   screen = pygame.display.set_mode(screensize)
+   pygame.display.set_caption("WINDOW TITLE HERE")
+   
+   clock = pygame.time.Clock()
+   
+   facex = 50
+   facey = 50
+   
+   def handle_keys():
+       global facex, facey
+       keys = pygame.key.get_pressed()
+   
+       if keys[K_LEFT]:
+           # move the face to the left
+           facex -= 5
+       if keys[K_RIGHT]:
+           # move the face to the right
+           facex += 5
+       if keys[K_UP]:
+           # move the face up
+           facey -= 5
+       if keys[K_DOWN]:
+           # move the face down
+           facey += 5
+   
+   done = False
+   
+   while not done:
+       # 1. Process events
+       for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+               done = True
+       handle_keys()
+   
+       # 2. Program logic, change variables, etc.
+   
+       # 3. Draw stuff
+       screen.fill(white)
+   
+       # Draw the head
+       pygame.draw.ellipse(screen, yellow, [facex, facey, 400, 400], 0)
+       pygame.draw.ellipse(screen, black, [facex, facey, 400, 400], 2)
+   
+       # Draw the eyes
+       pygame.draw.ellipse(screen, black, [145, 145, 50, 50], 0)
+       pygame.draw.ellipse(screen, black, [300, 145, 50, 50], 0)
+   
+       # Draw the mouth
+       pygame.draw.line(screen, black, [175, 340], [325, 340], 6)
+      
+       # Flip the buffer and do short delay to maintain framerate
+       pygame.display.flip()
+       clock.tick(20)
+
+   pygame.quit()
+
+
+Run the code in Listing :numref:`%s <move_face_1>`.  Oh no!  When we 
+press the arrow keys, the head moves... but the eyes and mouth stay put.
+Do you have an idea why this might be?
+
+Notice that we use the values of ``facex`` and ``facey`` to draw the head,
+but we don't use them to draw the rest of the face.  As ``facex`` and
+``facey`` change, the head gets re-drawn each time in the loop body
+using those new values, but the eyes and mouth are always drawn using
+*absolute* coordinates.
+
+To fix this, we will need to draw the position of the eyes and mouth
+*relative to* ``facex`` and ``facey``.  For example, the left eye's X
+coordinate is 145, which is 145 - 50 = 95 pixels left of ``facex``.
+The left eye's Y coordinate is the same: 145 - 50 = 95.  We can apply
+this same thought process to the right eye and mouth, which yields this
+code:
+
+.. code-block:: python
+
+   # Draw the head
+   pygame.draw.ellipse(screen, yellow, [facex, facey, 400, 400], 0)
+   pygame.draw.ellipse(screen, black, [facex, facey, 400, 400], 2)
+
+   # Draw the eyes
+   pygame.draw.ellipse(screen, black, [facex + 95, facey + 95, 50, 50], 0)
+   pygame.draw.ellipse(screen, black, [facex + 250, facey + 95, 50, 50], 0)
+
+   # Draw the mouth
+   pygame.draw.line(screen, black, [facex + 125, facey + 290],
+                                   [facex + 275, facey + 290], 6)
+
+If you'd like to download a "fresh copy" of our code so far, you can download
+it here: `move-face.py <https://raw.githubusercontent.com/jbshep/conversational-python/master/code/move-face.py>`_.
+
+
+.. _sec_anim_pt2:
+
+Animation, Part 2
+-----------------
+
+Now that we have figured out how to animate graphics using keyboard keys,
+let us attempt to move graphics autonomously, in other words, make them
+move on their own without user intervention.
+
+We will use the following starting code, in which we've made the face a little
+smaller so that it does not take up so much of the screen.  We've also removed
+the ``handle_keys`` function.  You are encouraged to download your own copy
+of this code here: `bounce-face-starter.py <https://raw.githubusercontent.com/jbshep/conversational-python/master/code/bounce-face-starter.py>`_.  Go ahead and rename
+your code ``bounce-face.py``.
+
+.. _bounce_face_starter:
+.. code-block:: python
+   :caption: Starter code for bouncing a face around the screen
+
+   import pygame
+   from pygame.locals import *
+   
+   pygame.init()
+   
+   white = (255, 255, 255)
+   black = (0, 0, 0)
+   yellow = (255, 255, 0)
+   
+   screenwidth = 800
+   screenheight = 600
+   screensize = [screenwidth, screenheight]
+   screen = pygame.display.set_mode(screensize)
+   pygame.display.set_caption("WINDOW TITLE HERE")
+   
+   clock = pygame.time.Clock()
+   
+   facex = 50
+   facey = 50
+   
+   done = False
+   
+   while not done:
+       # 1. Process events
+       for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+               done = True
+   
+       # 2. Program logic, change variables, etc.
+   
+       # 3. Draw stuff
+       screen.fill(white)
+   
+       # Draw the head
+       pygame.draw.ellipse(screen, yellow, [facex, facey, 150, 150], 0)
+       pygame.draw.ellipse(screen, black, [facex, facey, 150, 150], 2)
+   
+       # Draw the eyes
+       pygame.draw.ellipse(screen, black, [facex + 40, facey + 40, 10, 10], 0)
+       pygame.draw.ellipse(screen, black, [facex + 100, facey + 40, 10, 10], 0)
+   
+       # Draw the mouth
+       pygame.draw.line(screen, black, [facex + 45, facey + 100],
+                                       [facex + 100, facey + 100], 3)
+   
+       # Flip the buffer and do short delay to maintain framerate
+       pygame.display.flip()
+       clock.tick(20)
+   
+   pygame.quit()
+
+We are going to move the face autonomously (i.e, on its own).  This is as
+simple as changing ``facex`` and ``facey`` in the body of the loop in
+part 2., like this:
+
+.. code-block:: python
+
+   # 2. Program logic, change variables, etc.
+   facex += 5
+   facey += 5
+   
+We are sending the face down and to the right.  Each time through the loop
+body, we update the location of the face, so it gets drawn slightly farther down
+the screen each time.
+
+Add this code and run it!
+
+Off it goes!  There goes the face.  Going... going... gone!  Why did it move
+off the screen?  Why didn't it stop when it reached the edge?  The answer, of
+course, is because we told it to.  As long as the program is running, we keep
+adding 5 to ``facex`` and ``facey``.  The dimensions of our screen are ``800x600``,
+so once ``facex`` and ``facey`` exceed that, the face will leave the screen.
+
+Before we go any further, we should put all of the face movement code into
+its own function.  Change part 2 of the loop to this:
+
+.. code-block:: python
+
+   # 2. Program logic, change variables, etc.
+   move_face()
+
+and define the new function like so:
+
+.. code-block:: python
+
+   def move_face():
+       global facex, facey
+
+       facex += 5
+       facey += 5
+
+Very good.  Now, the problem with ``move_face`` is that it adds ``5`` to
+``facex`` and ``facey`` no matter what.  If the face touches a "wall"
+(that is, the top, bottom, left, or right edge of the screen), we may need
+to subtract rather than add ``5`` pixels to ``facex`` or ``facey``.
+
+Let's state this another way, and consider horizontal movement only for now.
+To move the face horizontally, we always want to add some amount to ``facex``,
+and that amount is how much we want to change the position
+of the face.  If the amount is +5, we are moving the face to the right.
+If the amount is -5, we are moving the face to the left.
+
+What if we made a variable named ``xchange``.  ``xchange`` can keep track
+of whether we are adding +5 or -5 to ``facex``.  If the face touches an edge,
+we change the sign of ``xchange``.  Changing the sign from positive to negative
+or from negative to positive is as simple as multiplying it by -1.  So,
+consider the following pseudocode.
+
+.. code-block:: python
+
+   def move_face():
+       global facex, facey
+
+       # if we touch the left or right wall
+       #    change the sign of xchange
+       #
+       # add xchange to facex no matter what
+
+Okay.  Now let's change our pseudocode to actual Python code.
+First, let's do the left wall.
+
+.. code-block:: python
+
+   def move_face():
+       global facex, facey
+
+       if facex <= 0: # just the left wall first
+           xchange = xchange * -1
+
+       facex += xchange
+
+Recall that ``facex`` is the X coordinate of the upper left corner of the face.
+If it's zero (or if it accidentally goes past zero into the negatives),
+we will flip the direction so that it heads towards the right.  If we want to
+detect whether the face has touched the right wall, we cannot just do this:
+
+.. code-block:: python
+
+   def move_face():
+       global facex, facey
+
+       if facex <= 0 or facex >= screenwidth: # the right wall logic is WRONG
+           xchange = xchange * -1
+
+       facex += xchange
+
+While it is correct that ``screenwidth`` tells us the pixel location of the
+right wall, we have failed to account for the width of the face.  When we
+drew the face, the width we used was ``150``.  Thus, the expression
+``facex + 150`` tells us the X of the right side of the face, like this:
+
+.. code-block:: python
+
+   def move_face():
+       global facex, facey
+
+       if facex <= 0 or facex + 150 >= screenwidth: 
+           xchange = xchange * -1
+
+       facex += xchange
+
+If we define ``xchange`` globally and then add ``xchange`` to our list of
+globals, we should be all set.  We will choose ``5`` as the starting value
+of ``xchange``, which will send the face to the right initially.
+
+.. code-block:: python
+
+   facex = 50
+   facey = 50
+   xchange = 5
+   ychange = 5
+
+and then,
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 2
+
+   def move_face():
+       global facex, facey, xchange, ychange
+
+       if facex <= 0 or facex + 150 >= screenwidth: 
+           xchange = xchange * -1
+
+       facex += xchange
+
+Now that the X coordinate logic is done, the Y coordinate logic is basically
+the same (only we use ``facey``, ``ychange``, and ``screenheight``).
+Before we do that, we should probably talk about *magic numbers*.  Magic
+numbers are number values in your code that you are forcing yourself to
+remember, like ``150`` being the width of the face.  To a programmer looking
+at your code for the first time, they might ask "Why are you adding 150 here?"
+That's not good, and it makes your code harder to maintain. 
+
+Instead of having a magic number like 150, let's replace it with a variable
+whose name describes what it is, i.e., ``facewidth``.  Likewise, we'll have
+``faceheight`` to describe how tall the face is.
+
+The end result, with Y coordinate logic added and magic numbers replaced with
+descriptive variables, is shown in Listing :numref:`%s <bounce_face_final>`.
+You'll notice I've also introduced a variable ``facespeed`` in place of ``5``.
+That way, we can change the speed of the face simply by changing one variable.
+Nifty!
+
+I've included one more little extra surprise in Listing :numref:`%s <bounce_face_final>`.  Pygame allows us to play sounds when we wish.  We're going to play a "boing" sound whenever we hit a wall.  First, `download the sound file <https://raw.githubusercontent.com/jbshep/conversational-python/master/code/bounce.wav>`_ and place it into the same folder as your code.  Then, note lines 25, 32, and 35.  Line 25 loads the sound file.  Lines 32 and 35 play the sound whenever the face hits the wall.
+
+Listing :numref:`%s <bounce_face_final>` can be downloaded in its entirety here: `bounce-face.py  <https://raw.githubusercontent.com/jbshep/conversational-python/master/code/bounce-face.py>`_.
+
+.. _bounce_face_final:
+.. code-block:: python
+   :linenos:
+   :caption: Final code for moving a face and bouncing off walls autonomously
+
+   import pygame
+   from pygame.locals import *
+   
+   pygame.init()
+   
+   white = (255, 255, 255)
+   black = (0, 0, 0)
+   yellow = (255, 255, 0)
+   
+   screenwidth = 800
+   screenheight = 600
+   screensize = [screenwidth, screenheight]
+   screen = pygame.display.set_mode(screensize)
+   pygame.display.set_caption("WINDOW TITLE HERE")
+   
+   clock = pygame.time.Clock()
+   
+   facex = 50
+   facey = 50
+   facewidth = 150
+   faceheight = 150
+   facespeed = 5
+   xchange = facespeed
+   ychange = facespeed
+   sound = pygame.mixer.Sound("bounce.wav")
+   
+   def move_face():
+       global facex, facey, xchange, ychange
+   
+       if facex <= 0 or facex + 150 >= screenwidth: 
+           xchange = xchange * -1
+           sound.play()
+       if facey <= 0 or facey + 150 >= screenheight: 
+           ychange = ychange * -1
+           sound.play()
+   
+       facex += xchange
+       facey += ychange
+   
+   done = False
+   
+   while not done:
+       # 1. Process events
+       for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+               done = True
+   
+       # 2. Program logic, change variables, etc.
+       move_face()
+   
+       # 3. Draw stuff
+       screen.fill(white)
+   
+       # Draw the head
+       pygame.draw.ellipse(screen, yellow, [facex, facey, 150, 150], 0)
+       pygame.draw.ellipse(screen, black, [facex, facey, 150, 150], 2)
+   
+       # Draw the eyes
+       pygame.draw.ellipse(screen, black, [facex + 40, facey + 40, 10, 10], 0)
+       pygame.draw.ellipse(screen, black, [facex + 100, facey + 40, 10, 10], 0)
+   
+       # Draw the mouth
+       pygame.draw.line(screen, black, [facex + 45, facey + 100],
+                                       [facex + 100, facey + 100], 3)
+   
+       # Flip the buffer and do short delay to maintain framerate
+       pygame.display.flip()
+       clock.tick(20)
+   
+   pygame.quit()
 
 
 .. _sec_objects_and_classes:
@@ -537,6 +1152,7 @@ Objects and Classes
 -------------------
 
 FIXME
+
 
 .. _sec_sprites:
 
