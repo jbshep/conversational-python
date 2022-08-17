@@ -18,23 +18,6 @@ clock = pygame.time.Clock()
 facex = 50
 facey = 50
 
-def handle_keys():
-    global facex, facey
-    keys = pygame.key.get_pressed()
-
-    if keys[K_LEFT]:
-        # move the face to the left
-        facex -= 5
-    if keys[K_RIGHT]:
-        # move the face to the right
-        facex += 5
-    if keys[K_UP]:
-        # move the face up
-        facey -= 5
-    if keys[K_DOWN]:
-        # move the face down
-        facey += 5
-
 done = False
 
 while not done:
@@ -42,7 +25,6 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    handle_keys()
 
     # 2. Program logic, change variables, etc.
 
