@@ -20,7 +20,10 @@ library named *Pygame*.  Very shortly, we'll learn how to install Pygame on your
 computer.  Then, we'll write some simple graphical programs and eventually
 animate the graphics to make them move around the screen.
 
-Cool, huh?
+Sounds like a big jump, right?  Actually, it isn't.  You'll find that
+Pygame graphics are just a re-application of the same principles we've been
+learning all along.  That's partly why this is the last chapter.  We
+get to apply what we've learned to make something cool and interactive.
 
 Eventually, we will reach a point in this chapter while learning about graphics
 where things will get a little frustrating.  We will want to detect when two
@@ -1151,9 +1154,442 @@ Listing :numref:`%s <bounce_face_final>` can be downloaded in its entirety here:
 Objects and Classes
 -------------------
 
-FIXME
+In the previous section, we learned to make a face bounce around the screen.
+It was gloriously awesome!  But what would happen if we tried to add some
+features?  What if we wanted to add a whole bunch of faces (like
+ten!) and have them all bounce around the screen and bounce off each other?
+Can you imagine all the crazy ``if``-statement code we would need to write to
+make all that happen, and how much code we would need to add and modify every
+time we added a new face to the screen?  That would be super bogus and awful.
 
+Fortunately, modern programming languages have a mechanism for dealing with
+interactions between code "objects" like bouncing balls.  It's called
+**object-orientation**.
 
+In object-orientation, we have **objects** and we have **classes**.  An
+object has its own data and its own functions that do stuff with that data.
+A class is like a prototype for making a bunch of new objects that all have
+the same "structure."
+
+This is best explained using examples, and believe it or not, you've been
+using classes and objects and you haven't realized it.  A string is one
+example of an object.  The data in a string is the string's characters.
+The functions are things like ``.lower``, ``.replace``, etc., all of which 
+do something with the data kept in the string object.  The class used to
+create different strings is called ``str``.
+
+We will explore the relationship between objects and classes visually.
+Suppose we create and use two string variables as in Listing
+:numref:`%s <create_strings>`.  Each variable contains a value known as a
+string object.  Figure :numref:`%s <fig_str_objects>` shows us the two objects.
+Notice how they have the same "form" but not the same exact data.
+The form of an object is defined by its class.  Eventually, we will
+show you how to define a class.  Notice in Figure :numref:`%s <fig_str_objects>`
+how I've decided to depict each object.  We can see the data "inside" the
+object.  We can also see a couple of the functions represented as "tubes"
+that allow access into the inside of the object.
+
+.. _create_strings:
+.. code-block:: python
+   :linenos:
+   :caption: Creating and using string variables
+
+   s1 = "Good cop"
+   s2 = "Bad cop"
+   x = s1.lower()
+   y = s2.lower().replace("bad", "good")
+   if x == y:
+       print("Yay.")
+   else:
+       print("What?")
+
+.. _fig_str_objects:
+.. figure:: images/ch9/str-objects.png
+   :scale: 50 %
+   :alt: Two string objects
+
+   Two string objects
+
+To recap what we've learned so far:
+
+#. All string objects have the same form.
+#. The code that defines the form is called a class.
+#. Each object has its own data.
+#. The class defines the common structure for each object.
+
+We can know what the class of an object is by using the ``type`` function.
+We can interactively check the class of an object stored in variable using
+the Python shell window like this:
+
+.. code-block:: none
+
+   >>> s1 = "Good cop"
+   >>> type(s1)
+   <class 'str'>
+
+Strings are special objects in Python.  When we create them using an
+assignmentn statement, Python allows us to use a short-hand notation that
+we've been unaware of until now.  This:
+
+.. code-block:: python
+
+   s = "123"
+
+is actually:
+
+.. code-block:: python
+
+   s = str(123)
+
+We know that ``str`` is every string object's **class**.  Here, it also looks
+like a function.  It's a special type of function known as a **constructor**.
+A constructor is a function that uses a class to create a new object.
+
+Let us pretend that we have a new class named ``Circle``.  Notice that ``Circle``
+starts with a capital letter.  By convention, from here forward we will
+capitalize the names of our classes.  That way it is easy to tell what things
+are variables that contain objects, and we can tell what things are the names
+of classes.
+
+With this ``Circle`` class that we are pretending we can use, we might be able
+to write code like this:
+
+.. _using_circle_class:
+.. code-block:: python
+   :caption: Using a class named ``Circle``
+
+   c1 = Circle()
+   c1.x = 0
+   c1.y = 0
+   c1.w = 100
+   c1.h = 100
+   c1.color = black
+   c1.draw(screen)
+   
+   c2 = Circle()
+   c2.x = 100
+   c2.y = 200
+   c2.w = 200
+   c2.h = 275
+   c2.color = turquoise
+   c2.draw(screen)
+
+Listing :numref:`%s <using_circle_class>` will give us the opportunity to
+introduce some terminology.  This terminology will help us talk unambiguously
+about objects and classes, and very soon I will show you how to actually
+create this ``Circle`` class so that we can use it for real.  In Listing
+:numref:`%s <using_circle_class>`, we are creating two separate
+``Circle`` objects.  They have the same form, but they keep track of separate
+data.  Figure :numref:`%s <fig_class_terms>` introduces the terminology we will
+be using.
+
+.. _fig_class_terms:
+.. figure:: images/ch9/class_terms.png
+   :scale: 50 %
+   :alt: Class/object terminology
+
+   Class/object terminology
+
+We have already encountered the term **constructor**.  A constructor is
+a function that makes a new object by copying a class's structure.
+
+The next term is **attribute**.  An attribute is a variable that is contained
+inside an object.  We might say that an attribute *belongs to* that object.
+Attributes can be accessed using "dot-notation."  Thus, ``c1.x`` is ``c1``'s
+``x`` attribute or ``x`` variable.
+
+The last term is **method**.  Any function that *belongs to* an object is
+called a method.  Methods are functions that belong to an object.  Methods
+are defined by the class used to create the object in the first place.
+
+Notice that we have stored all of the different things we care about with
+regard to a circle in attributes.  Recall that when we draw a circle in
+Pygame, we will need to know the circle's x, y, width, height, and color.
+Instead of having separate variables like ``c1x``, ``c1y``, ``c1width``, etc.,
+now we can keep them all together in a single variable named ``c1``, and
+then access their attributes using the dot-notation.
+
+Presumably, when it comes time to define the ``draw`` method, we can use
+these attributes when we call ``pygame.draw.ellipse``.
+
+Okay, are you ready to see how to actually program the ``Circle`` class
+so that we can use it for real?
+
+Defining a class looks like this:
+
+.. _def_circle:
+.. code-block:: python
+   :linenos:
+   :caption: First attempt at defining the ``Circle`` class
+
+   class Circle:
+       def __init__(self):
+           self.x = 0
+           self.y = 0
+           self.w = 100
+           self.h = 100
+           self.color = black
+
+Let's break it down.  Line 1 is the start of the class definition and it
+seems pretty straightforward.  The rest of the class definition is indented
+below it.  Then we have line 2... ummm, okay, that looks kind of weird.
+What's going on there?
+
+Well, line 2 is clearly the start of a function since it begins with the
+Python keyword ``def``.  Then, we have the word "init" but it starts with
+two underscores and it ends with two underscores.  Python programmers
+(a.k.a. "Pythonistas") use the word "dunder" when they want to talk about
+names having double underscores, so we often pronounce ``__init__`` aloud
+as "dunder init dunder" or simply "dunder init".  ``__init__`` has a single
+parameter as well, and we have chosen to call it ``self`` for reasons that
+will make sense shortly.
+
+The body of the function in this particular example contains only a series
+of assignment statements.  In each statement, we are taking the ``self``
+parameter and changing the value of one of its attributes.  Notice that
+this ``self`` variable appears to have the same attributes as the Circle
+objects in Listing :numref:`%s <using_circle_class>`.  That's interesting.
+Does that mean that ``self`` is a Circle object?  As turns out, it is!
+
+To understand what's going on here, let's take a closer look at what happens
+when you use the ``Circle`` constructor in your main code.  In Figure
+:numref:`%s <fig_ctor_rewrite>`, we can see code that makes a ``Circle`` object
+named ``c1``.  When the Python interpreter goes to run this code, it
+actually "re-writes" the code as shown in the figure.  Thus, the ``Circle``
+object itself is passed as an argument to ``__init__``, so ``self``
+refers to the ``c1`` object.
+
+.. _fig_ctor_rewrite:
+.. figure:: images/ch9/ctor_rewrite.png
+   :scale: 30 %
+   :alt: What really happens when we call a constructor function
+
+   What really happens when we call a constructor function
+
+Whenever we use a class's constructor to create a new object, the new
+object is passed into the ``self`` parameter.  The "context" of the body
+of that function is then whichever circle we're manipulating.
+
+Any methods that belong to objects of that class work the same way.
+Any method must have a ``self`` parameter as its first parameter so
+that we know *which* ``Circle`` object we're using.  For example, circles
+are supposed to have a method named ``draw``, which we used in Listing
+:numref:`%s <using_circle_class>` to draw the circle on the screen
+using its attributes, like this:
+
+.. code-block:: python
+
+   c1.draw(screen)
+
+Notice that ``draw`` *looks* like it only has one parameter, the screen object,
+but in fact there are two.  The first real parameter must be ``self``, and
+the second then becomes the ``screen`` variable.  Figure
+:numref:`%s <fig_method_rewrite>` helps us understand this more clearly.
+
+.. _fig_method_rewrite:
+.. figure:: images/ch9/method_rewrite.png
+   :scale: 30 %
+   :alt: What really happens when we call a method on an object
+
+   What really happens when we call a method on an object
+
+We must now **implement** (i.e., "write the code for...") the ``draw`` method
+to make it work.  Here is what we'll do (see Listing
+:numref:`%s <def_circle_draw>`).
+
+.. _def_circle_draw:
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 9,10,11
+   :caption: Adding definition of ``draw`` method to ``Circle`` class
+
+   class Circle:
+       def __init__(self):
+           self.x = 0
+           self.y = 0
+           self.w = 100
+           self.h = 100
+           self.color = black
+
+       def draw(self, screen):
+           pygame.draw.ellipse(screen, self.color,
+                               [self.x, self.y, self.w, self.h], 0)
+
+This is one thing that often trips up novice programmers (and sometimes
+experienced ones, too).  Any time we create a new method definition
+as part of a class definition, we must remember to make ``self`` the
+first parameter of the method even though we don't explicitly pass a
+value to ``self``.  Think of ``self`` as a hidden parameter.
+
+.. _sec_extending_classes:
+
+Extending Classes to Make New Classes
+-------------------------------------
+
+Sometimes we want to define a new class that is very similar to a class
+we already have.  Maybe we want a ``Face`` class.  Drawing a ``Face``
+is very similar to drawing a ``Circle``.  To draw a face, all we need to do
+is draw a circle first, and then finish by drawing eyes and a mouth.
+In Python, we can **extend** the ``Circle`` class to define the ``Face``
+class in such a way that we don't have to re-invent the metaphorical wheel.
+In the ``Face`` class, we will only write code that deals with the eyes and
+mouth.  When it is time to do the circle, we will have ``Face`` defer to
+the ``Circle`` code so we don't need to copy/paste that code, too.
+
+Terminology time!  As we just said, we are going to **extend** the ``Circle``
+class to make the ``Face`` class.  When we do this, the ``Circle`` class
+is called the **superclass** or the **parent class**.  The ``Face`` class
+is known as the **subclass** or **child class**. Figure
+:numref:`%s <fig_parent_child>` shows this relationship in code.
+
+.. _fig_parent_child:
+.. figure:: images/ch9/parent_child.png
+   :scale: 20 %
+   :alt: Parent class and child class
+
+   Parent class and child class
+
+Observe that the first line of the ``Face`` class definition is a little
+different.  It has parentheses containing the word ``Circle``.  If
+we want ``Face`` to be based on ``Circle`` and have ``Circle`` as its
+parent class, we write ``class Face(Circle):``.
+
+Now, let's program the body of the ``Face`` class.  See Listing
+:numref:`%s <face_class>`.
+
+.. _face_class:
+.. code-block:: python
+   :linenos:
+   :caption: Extending ``Circle`` to make ``Face``
+
+   class Face(Circle):
+       def __init__(self):
+           super().__init__()
+   
+       def draw(self, screen):
+           super().draw(screen)  # Draw the circle
+   
+           # Now, draw the rest of the face.
+
+The expression ``super()`` allows us to interact with the ``Circle`` code.
+``super()`` gives us a reference to the ``Circle`` "portion" of our ``self``
+object, which allows us to call ``Circle`` methods, like the ``Circle``
+constructor ``__init__`` and, in line 6 of Listing :numref:`%s <face_class>`,
+the ``Circle``'s ``draw`` method.
+
+Let's see how we might use these two new classes.  Listing
+:numref:`%s <using_face>` shows an example program that you should 
+examine and then try to modify in different ways.  If you'd like to download
+it and try it for yourself, use this link: `face-ex.py <https://raw.githubusercontent.com/jbshep/conversational-python/master/code/face-ex.py>`_.
+
+.. _using_face:
+.. code-block:: python
+   :caption: Using ``Circle`` and ``Face``
+
+   import pygame
+   from pygame.locals import *
+   
+   pygame.init()
+   
+   white = (255, 255, 255)
+   black = (0, 0, 0)
+   red = (255, 0, 0)
+   green = (0, 255, 0)
+   turquoise = (0, 255, 255)
+   yellow = (255, 255, 0)
+   
+   class Circle:
+       def __init__(self):
+           self.x = 0
+           self.y = 0
+           self.w = 100
+           self.h = 100
+           self.color = black
+        
+       def draw(self, screen):
+           pygame.draw.ellipse(screen, self.color,
+                               [self.x, self.y, self.w, self.h], 0)
+   
+   class Face(Circle):
+       def __init__(self):
+           super().__init__()
+           
+       def draw(self, screen):
+           super().draw(screen)
+           
+           x1 = self.x + (self.w / 3)
+           x2 = x1 + (self.w / 3)
+           y1 = self.y + (self.h / 3)
+           y2 = y1 + (self.h / 3)
+           
+           pygame.draw.ellipse(screen, black, [x1, y1, 5, 5], 0)
+           pygame.draw.ellipse(screen, black, [x2, y1, 5, 5], 0)
+           pygame.draw.line(screen, black, [x1, y2], [x2, y2], 3)
+   
+           
+   screenwidth = 800
+   screenheight = 600
+   screensize = [screenwidth, screenheight]
+   screen = pygame.display.set_mode(screensize)
+   pygame.display.set_caption("Drawing with Classes")
+   
+   clock = pygame.time.Clock()
+   
+   
+   done = False
+   
+   c1 = Circle()
+   
+   c2 = Circle()
+   c2.x = 100
+   c2.y = 200
+   c2.w = 200
+   c2.h = 275
+   c2.color = turquoise
+   
+   f1 = Face()
+   f1.x = 400
+   f1.y = 200
+   f1.w = 200
+   f1.h = 200
+   f1.color = yellow
+   
+   f2 = Face()
+   f2.x = 450
+   f2.y = 450
+   f2.w = 75
+   f2.h = 75
+   f2.color = green
+   
+   redface = Face()
+   redface.x = 300
+   redface.y = 50
+   redface.w = 200
+   redface.h = 100
+   redface.color = red
+   
+   while not done:
+       # 1. Process events
+       for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+               done = True
+   
+       # 2. Program logic, change variables, etc.
+   
+       # 3. Draw stuff
+       screen.fill(white)
+       c1.draw(screen)
+       c2.draw(screen)
+       f1.draw(screen)
+       f2.draw(screen)
+       redface.draw(screen)
+   
+       pygame.display.flip()
+       clock.tick(20)
+   
+   
+   pygame.quit()
+   
 .. _sec_sprites:
 
 Pygame Sprites
