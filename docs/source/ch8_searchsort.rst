@@ -450,7 +450,9 @@ did find it.  See Listing :numref:`%s <binsearch_func>`.
 (Optional) Using Recursion to Search
 ------------------------------------
 
-This section will be added at a later date.
+This section will be added at a later date.  The author will also add an
+optional section in the Functions chapter to describe what recursion is before
+we get here.
 
 .. _sec_searchsort_exercises:
 

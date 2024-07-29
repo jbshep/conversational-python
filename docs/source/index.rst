@@ -8,15 +8,15 @@
 Preface                                                                               
 =======
   
-Perhaps some day this book will have a real preface -- one in which the author
-waxes philosophically about the wonders of this textbook, how it was a labor of
-love, and how you should think very intentionally about the book's organization
-despite the fact that you (the reader) really don't care.  For now, I shall
-simply thank the following.
+Perhaps by the time I write a third edition, this book will have a proper preface
+-- one in which the author (me) waxes philosophically about the wonders of this
+textbook, how it was a labor of love, and how you should think very intentionally
+about the book's organization despite the fact that you (the reader) really don't
+care.  For now, I shall simply thank the following.
 
-* My wife Lisa and my children Ian, Noah, and Tatum for their support of my teaching career, and especially my daughter Tatum for drawing the cover for this book.  She was 11 years old at the time she drew it.
-* My CMSC 181 Intro to Computer Science students from Fall 2016 for providing detailed and thoughtful feedback on the first draft of this book.
-* My CMSC 181 Intro to Computer Science Students from Fall 2017 to now for continuing the journey of engaging with this book.  Special thanks to Tyler Freese for finding the most inaccuracies, mistakes, etc., in this tome (and especially for being polite about it).
+* My wife Lisa and my children Ian, Noah, and Tatum for their support of my teaching career, and especially my daughter Tatum for drawing the cover for both the first and second editions of this book.  She was 11 years old at the time she drew the cover for the first edition and 18 when she drew the second edition's cover.
+* My CMSC 181 Intro to Computer Science students from Fall 2016 and Fall 2017 for providing detailed and thoughtful feedback on the first draft and first edition of this book.
+* All CMSC 181 students since Fall 2018 who have engaged with the book, offered comments, and provided corrections while being nice about it.
 * Everyone at `Buena Vista University <http://www.bvu.edu/>`_ for making the university a remarkable place, especially my colleagues in computer science: Nathan Backman and Shawn Stone.
 * My God, for allowing me to live and serve as I do.
 

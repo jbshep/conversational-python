@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Conversational Python'
-copyright = '2022, Jason B. Shepherd, Ph.D.'
+copyright = '2024, Jason B. Shepherd, Ph.D.'
 author = 'Jason B. Shepherd, Ph.D.'
 
 # The full version, including alpha/beta/rc tags

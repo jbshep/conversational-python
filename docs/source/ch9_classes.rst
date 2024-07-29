@@ -1587,12 +1587,122 @@ it and try it for yourself, use this link: `face-ex.py <https://raw.githubuserco
        pygame.display.flip()
        clock.tick(20)
    
-   
    pygame.quit()
+
+The ability to extend one class to create another child class is called
+**inheritance** because the child class *inherits* the attributes and methods
+of the parent class.  We are introducing this concept because it allows us
+to build on already existing code.
+
+In the next section, we will learn about Pygame sprites.  A ``Sprite`` is a
+class that contains all sorts of awesome code that helps us draw an image on
+the screen while managing a rectangle around the image.  Sprite methods
+already exist that help us determine whether the rectangles of two sprite
+are touching one another.  Through inheritance, we will extend the ``Sprite``
+class to create basic 2-dimensional video games.  Let's go!
    
+
 .. _sec_sprites:
 
 Pygame Sprites
 --------------
 
-FIXME
+The ``pygame.sprite`` package contains all sorts of useful classes for making
+interactive graphical programs.  We will be using two of them primarily.
+
+#. ``pygame.sprite.Sprite``
+   
+   * A class that we can subclass to make new Pygame on-screen objects
+   * Makes it easier to detect collisions between sprites
+
+#. ``pygame.sprite.Group``
+
+   * A class that groups sprites together like a list
+   * Allows us to draw all sprites in a group at once
+   * Allows us to determine whether one sprite has collided with
+     any number of other sprites who are of the same type
+
+Notice that the package name ``pygame.sprite`` is in all lowercase, and
+then the class name starts with a capital letter, like "S" in ``Sprite``
+and "G" in ``Group``.
+
+When it comes time to create a child class of the ``Sprite`` class
+(let's call it ``Player``, for example), we would begin our class
+definition like this:
+
+.. code-block:: python
+
+   class Player(pygame.sprite.Sprite):
+
+We could also achieve the same effect by doing this:
+
+.. code-block:: python
+
+   from pygame.sprite import Sprite
+
+   class Player(Sprite):
+
+Suppose we are making a 2-dimensional game (like Super Marios Bros. or Legenda
+of Zelda), and we have an image of an adventurer that we've named ``player.gif``.
+Let us suppose that image is in the same folder as our code.  The following code
+makes a ``Sprite`` subclass named ``Player`` that uses our image, and then it
+uses the ``Player`` class definition to create a new ``Player`` object that we
+could use in our game.
+
+.. _player_class_def:
+.. code-block:: python
+   :caption: ``Player`` class definition 
+
+   class Player(pygame.sprite.Sprite):
+       def __init__(self):
+           super().__init__()
+           self.image = pygame.image.load("player.gif")
+           self.rect = self.image.get_rect()
+   
+   player_one = Player()
+
+The Pygame `sprite documentation <https://www.pygame.org/docs/ref/sprite.html>`_
+states that any ``Sprite`` must possess two attributes: an ``image`` and a ``rect``.
+The ``image`` attribute is a Pygame ``Surface``, much like a screen that we can
+draw on.  The ``image`` attribute is loaded using ``pygame.image.load`` in line 4.
+The ``rect`` attribute stores the ``x``, ``y``, ``width``, and ``height`` of the
+sprite on the screen.  We fill in this ``rect`` value by getting the size of the
+rectangle around the ``image`` attribute.  Given that the sprite's X/Y position
+is stored in the ``rect`` attribute, if we wanted to place our new 
+``player_one`` object at the very top left corner of the screen, we would write
+this code:
+
+.. code-block:: python
+
+   player_one.rect.x = 0
+   player_one.rect.y = 0
+
+We may want to introduce another type of sprite on the screen, like an enemy
+for our player.  The best way to accomplish this is to create another sprite
+subclass.  If we have an enemy image named ``enemy.gif``, we can easily create
+an ``Enemy`` class.
+
+.. _enemy_class_def:
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 7,8,9,10,11,14
+   :caption: Adding ``Enemy`` class definition
+
+   class Player(pygame.sprite.Sprite):
+       def __init__(self):
+           super().__init__()
+           self.image = pygame.image.load("player.gif")
+           self.rect = self.image.get_rect()
+   
+   class Enemy(pygame.sprite.Sprite):
+       def __init__(self):
+           super().__init__()
+           self.image = pygame.image.load("enemy.gif")
+           self.rect = self.image.get_rect()
+   
+   player_one = Player()
+   boss = Enemy()
+
+**NOTICE: This portion of the book is currently being re-written.**
+**Check back later for an update to this edition.**
+

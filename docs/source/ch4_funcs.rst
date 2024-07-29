@@ -1008,6 +1008,102 @@ cases we will manage common information in global variables, especially when we
 program video games.  Stay tuned!
 
 
+.. _sec_funcs_recursion:
+
+(Optional) Recursion
+--------------------
+
+This is the first "optional" section you get to encounter in this book.  The optional sections are intended for readers who have maybe programmed before and want to learn more and seek out an additional challenge.  You can skip over this section if you'd like.  This section deals with a concept called *recursion*.  Recursion happens when a function calls *itself* within its own body.  It is a powerful and awesome idea that shows up a lot in advanced computer science courses.
+
+How and why would a function call itself?  That sounds weird, doesn't it?  And why would it be a powerful and awesome thing to use?  Let's tackle the first question.
+
+Consider Listing :numref:`%s <infty_recur>`.
+
+.. _infty_recur:
+.. code-block:: python
+   :linenos:
+   :caption: Simple yet infinite recursion
+
+   def call_me(n):
+       print(n)
+       call_me(n - 1)
+
+   # Try it out.
+   call_me(10)
+
+The function ``call_me`` looks simple enough. It takes an integer as its parameter, it prints that integer to the screen, and then it calls the very same function again but this time with one less.  Thus, if a program called ``call_me(10)``, that function would print ``10`` and then would execute ``call_me(9)``.
+
+Well, if ``call_me(10)`` prints ``10`` and then executes, ``call_me(9)``, what does ``call_me(9)`` do?  It would print ``9`` and call ``call_me(8)``.  Uh oh.  Do you see a pattern here?  Actually try to run the code in Listing :numref:`%s <infty_recur>`.  What happens?
+
+You might think "infinite loop" (even though there's no real loop here), and you'd be generally correct!  However, the "loop" does actually end.  Check this out:
+
+.. code-block:: none
+
+   10
+   9
+   8
+   7
+   6
+   5
+   4
+   3
+   2
+   1
+   0
+   -1
+   -2
+   # ... I omitted a lot of lines from the output -- otherwise this
+   # ... section would be ridiculously long.
+   -977
+   -978
+   -979
+   -980
+   -981
+   -982
+   -983
+   -984
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+     File "<stdin>", line 3, in call_me
+     File "<stdin>", line 3, in call_me
+     File "<stdin>", line 3, in call_me
+     [Previous line repeated 992 more times]
+     File "<stdin>", line 2, in call_me
+   RecursionError: maximum recursion depth exceeded while calling
+   a Python object
+
+This output and error tells us that there is a limit to how many times a function can call itself.  Actually, it is more correct to say there is a limit to how many functions we can "stack" on top of functions before the program runs out of "stack space."  A more detailed explanation is unfortunately beyond the scope of this book.  In a book on computer architecture or operating systems, you can learn about something called an *activation record* or *stack frame* that manages the execution of a function, but again, that's way farther than we need to go now.
+
+So, what do we do?  Well, any recursive function needs to have a way to know when to stop calling itself.  We can use an ``if`` statement to stop things.  Consider Listing :numref:`%s <basic_recur>`.
+
+.. _basic_recur:
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 3
+   :caption: Simple recursion
+
+   def call_me(n):
+       print(n)
+       if n > 1:
+           call_me(n - 1)
+
+   # Try it out.
+   call_me(10)
+
+Thus, when ``n`` is 1, the program will have printed ``1`` but will not execute ``call_me(0)``.
+
+FIXME illustrate a call graph using a figure
+
+What is the point of all this?  As it turns out, recursion is a powerful technique for solving certain types of problems.  How do we know when to use it?  If we can describe a problem in terms of smaller versions of the problem itself, that problem is a good candidate for using recursion.
+
+Let's look at a simple example.  Perhaps you remember what a *factorial* is.  If not, rather than give a rigorous mathematical definition, let's learn by example.  The factorial of 3 is written :math:`3!` (note the exclamation mark) and it means :math:`3\times2\times1`.  Since :math:`3\times2\times1 = 6`, that means :math:`3! = 6`.
+
+With that example in mind, what do you think the factorial of 4 would be (that is, :math:`4!`)?  If you guessed :math:`4\times3\times2\times1 = 24`, you would be correct.  Thus, :math:`4! = 24`.
+
+Why do we care about factorials?  There are many applications of factorials, especially in the field of probability when we want to count things quickly., ...
+
+FIXME Suppose you want to determine how ID numbers...  factorial 4!
+
 .. _sec_funcs_exercises:
 
 Exercises
