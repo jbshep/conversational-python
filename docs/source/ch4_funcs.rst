@@ -1090,19 +1090,97 @@ So, what do we do?  Well, any recursive function needs to have a way to know whe
    # Try it out.
    call_me(10)
 
-Thus, when ``n`` is 1, the program will have printed ``1`` but will not execute ``call_me(0)``.
+Thus, when ``n`` is 1, the program will have printed ``1`` but will not execute ``call_me(0)``.  If we executed ``call_me(4)``, for example, the following traces how the function would call itself to print each number.
 
-FIXME illustrate a call graph using a figure
+.. code-block::
+
+   call_me(4)
+   print(4), call_me(3)
+   print(4), print(3), call_me(2)
+   print(4), print(3), print(2), call_me(1)
+   print(4), print(3), print(2), print(1)
 
 What is the point of all this?  As it turns out, recursion is a powerful technique for solving certain types of problems.  How do we know when to use it?  If we can describe a problem in terms of smaller versions of the problem itself, that problem is a good candidate for using recursion.
 
 Let's look at a simple example.  Perhaps you remember what a *factorial* is.  If not, rather than give a rigorous mathematical definition, let's learn by example.  The factorial of 3 is written :math:`3!` (note the exclamation mark) and it means :math:`3\times2\times1`.  Since :math:`3\times2\times1 = 6`, that means :math:`3! = 6`.
 
-With that example in mind, what do you think the factorial of 4 would be (that is, :math:`4!`)?  If you guessed :math:`4\times3\times2\times1 = 24`, you would be correct.  Thus, :math:`4! = 24`.
+With that example in mind, what do you think the factorial of 4 would be (that is, what is :math:`4!`)?  If you guessed :math:`4\times3\times2\times1 = 24`, you would be correct.  Thus, :math:`4! = 24`.
 
-Why do we care about factorials?  There are many applications of factorials, especially in the field of probability when we want to count things quickly., ...
+Why do we care about factorials?  There are many applications of factorials, especially in the field of probability when we want to count things quickly.  Here's an example.  Suppose we have four different books that we want to arrange on a shelf.  How many ways could we do it?  Let's call the books A, B, C, and D.  There are four choices for the first book we place.  Once we place the first book, there are three books left to select from for the second book.  Once we've placed two books, there are two books left to choose from for the third book.  Once we've placed three books, there is only book left.  Thus, there are :math:`4\times3\times2\times1 = 4!` different ways to arrange the books.
 
-FIXME Suppose you want to determine how ID numbers...  factorial 4!
+This is just a basic example.  There are far more interesting examples of problems that involve factorials, but they take longer to set up and investigating them would be quite a tangential diversion.  Hopefully you will encounter problems like this in a course or book on discrete mathematics or probability.  It's all very interesting.
+
+So, let's use recursion to program a factorial function.  Where to begin?  Remember what we said earlier: "If we can describe a problem in terms of smaller versions of the problem itself, that problem is a good candidate for using recursion."  So, let's make an observation.  We know, for example, that
+
+.. math::
+
+   4! = 4\times3\times2\times1
+
+and
+
+.. math::
+
+   3! = 3\times2\times1
+
+therefore
+
+.. math::
+
+   4! &= 4\times(3\times2\times1) \\
+      &= 4\times3!
+
+If we play around, we'll see this pattern with any factorial.  The factorial of a number is just that number times the factorial of one less than that number.  So, for any arbitrary integer :math:`n`,
+
+.. math::
+
+   n! = n\times(n-1)!
+
+and also
+
+.. math::
+
+   1! = 1
+
+We can combine the two definitions above to define our function below.
+
+.. _recur_fact:
+.. code-block:: python
+   :linenos:
+   :caption: A recursive factorial function
+
+   def factorial(n):
+       if n == 1:
+           return 1
+       else:
+           return n * factorial(n - 1)
+
+This is a typical setup for the definition of a recursive function.  They often look something like this:
+
+.. _recur_general:
+.. code-block:: python
+   :linenos:
+   :caption: Generalized form of a recursive function
+
+   def recur(n):
+       if n is the stopping condition
+           return initial value
+       else:
+           return the result of a smaller recursive piece of the problem
+                 ( like recur(n-1) )
+
+We can see a call to ``factorial(4)`` playing out as follows.
+
+.. code-block::
+
+   factorial(4)
+   return 4 * factorial(3)
+   return 4 * 3 * factorial(2)
+   return 4 * 3 * 2 * factorial(1)
+   return 4 * 3 * 2 * 1
+   return 24
+
+We will experience recursive functions again in an optional section found in Chapter :numref:`%s <ch_searchsort>`.  That's it for now, however!
+
 
 .. _sec_funcs_exercises:
 
