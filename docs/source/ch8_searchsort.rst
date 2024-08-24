@@ -450,9 +450,47 @@ did find it.  See Listing :numref:`%s <binsearch_func>`.
 (Optional) Using Recursion to Search
 ------------------------------------
 
-This section will be added at a later date.  The author will also add an
-optional section in the Functions chapter to describe what recursion is before
-we get here.
+Binary search is a clever way to find a value in a list when the list values are in sorted order.  Suppose we wanted to explain how it works to a friend.  We might use the following description.  If we want to find a value in an ordered list, look at the middle item.  If that's the value we want, great.  We found it!  If not, we ask if the value we want is smaller or larger than the middle.  If its smaller, repeat the process again for the left "half" of the list.  Otherwise, repeat it for the right "half" of the list.
+
+Did you notice what we just did?  We have recast the problem in terms of solving smaller versions of the problem itself.  We could have said something like, "It the value isn't in the middle, binary search either the left part or the right part." 
+
+You might recall from Section :numref:`%s <sec_funcs_recursion>` that this problem might be solvable using recursion.  A recursive function is one that calls itself, though calling itself using a different parameter value each time.
+
+The binary search function in the previous section was called with only two parameters, ``L`` and ``x``.  If you need to refresh your memory, take a look again at Listing :numref:`%s <binsearch_func>`.  ``L`` was the list, and ``x`` was the value we wish to find. If we are going perform a binary search recursively, each time the binsearch function calls itself, it will need more information than just ``L`` and ``x``.  We will also need to pass the list indices that mark what part of the list that concerns us at that point.  Let's call the beginning index ``i`` and the end index ``j`` just like we did in the body of the function in Listing :numref:`%s <binsearch_func>`.
+
+With this in mind, let's define a new function named ``rbinsearch`` (the "r" makes us think of the word "recursion") and let's have the signature of that function become ``rbinsearch(L, x, i, j)``.  Now, let's use what we've learned about programming recursive functions. Often, we use an ``if`` statement.  The first condition is the simplest.  In this case, if ``i`` and ``j`` have crossed, we don't have anything left in the list to search, so we can return ``-1``.  Otherwise, we can compute ``m`` as we did before.  If ``x`` is at ``L[m]``, we found it and can return ``m``.  If not, we can recursively call ``rbinsearch``.  Try to write the code and define the function on your own.  You can test your code using the following examples.  If your function works properly, the code below should print ``True`` three times.
+
+.. code-block:: python
+
+   M = [1, 2, 7, 9, 13]
+   print(rbinsearch(M, 2, 0, len(M) - 1) == M.index(2))
+   print(rbinsearch(M, 13, 0, len(M) - 1) == M.index(13))
+   print(rbinsearch(M, 14, 0, len(M) - 1) == -1)
+
+How did you do?  Where did you get stuck?  You can look at Listing :numref:`%s <rbinsearch_func>` for an example solution.  We should notice that calling ``rbinsearch`` is really clunky because we have to pass ``0`` and ``len(M) - 1`` every time.  We can redefine ``binsearch`` to call ``rbinsearch``.  In other words, ``binsearch(L, x)`` will call ``rbinsearch(L, x, 0, len(L) - 1)``.  Sometimes programmers will call a function like ``rbinsearch`` a "helper" function, because the function you call in the first place (in this case, ``binsearch``) then calls another function to do the actual work.
+
+.. _rbinsearch_func:
+.. code-block:: python
+   :linenos:
+   :caption: Recursive Binary Search
+
+   # The "helper" recursive function
+   def rbinsearch(L, x, i, j):
+       if i > j:
+           return -1
+       else:
+           m = (i + j) // 2
+           if x == L[m]:
+               return m
+           elif x < L[m]:
+               return rbinsearch(L, x, i, m - 1)
+           else:
+               return rbinsearch(L, x, m + 1, j)
+
+   # The function we actually call, which in turn calls the "helper" function.
+   def binsearch(L, x):
+       return rbinsearch(L, x, 0, len(L) - 1)
+
 
 .. _sec_searchsort_exercises:
 
