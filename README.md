@@ -1,6 +1,6 @@
 # conversational-python
 
-![](docs/source/images/cover-sm.png)
+![](docs/source/images/cover-2nd-ed.png)
 
 Conversational Python is an introduction to computer science in Python using a format that is more like a conversational tutorial than a textbook.
 
