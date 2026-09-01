@@ -354,12 +354,12 @@ we don't make mistakes with mixing uppercase and lowercase in Python, we
 typically stick to lowercase.
 
 Remember how I said variable names can't have spaces in them?  Let's try it
-anyway.  What if we changed ``firstname`` to ``first_name``?
+anyway.  What if we changed ``firstname`` to ``first name``?
 
 .. code-block:: python
 
-   first_name = input("What is your name? ")
-   print("Hello,", first_name)
+   first name = input("What is your name? ")
+   print("Hello,", first name)
 
 Run it and watch our program crash and burn.  It's a good things computers don't
 have feelings because ours would probably be feeling rather abused right now.
@@ -530,7 +530,8 @@ Figure :numref:`%s <cats_eval>`.
 
 Remember, the equals sign performs assignment of the value produced by the RHS
 to the variable on the LHS.  Therefore, the equals sign is more like a left
-arrow that the mathematical equals sign that normally says "the thing on the LHS
+arrow and less like a mathematical equals sign.  A mathematical equals sign
+normally indicates that "the thing on the LHS
 and the thing on the RHS have the same value."  The fact that you can type
 ``x = x + 1`` in Python looks yucky to mathematicians.  Poor, poor mathematicians.
 We will try to avoid making fun of mathematicians in this book, but I make
@@ -546,7 +547,7 @@ Let's modify the code example from the previous section.  It is, after all,
 silly because you start with a fixed number of cats when, in fact, we could
 start with any number of cats.  Let's ask users for how many cats they have in
 their barn.  Then, our program should calculate the number of cats they'll have
-in the barn in a month's time.  For the sake of argument, let's arbitrarilysuppose
+in the barn in a month's time.  For the sake of argument, let's arbitrarily suppose
 the number of cats will increase by 4.
 
 A running program that solves this problem would look like this on the Python
@@ -955,7 +956,7 @@ All functions return a value, even something like ``print``.  Just for fun
 
 Now, type ``var`` in the Shell window and press ENTER.  Hmm, normally when we type
 the name of a variable or we type an expression into the Python Shell window, it
-tells us its value.  We get nothing.  Type the expression ``type(var)`` into the
+tells us its value.  We get nothing.  Now, type the expression ``type(var)`` into the
 Shell.  Aha!  The variable ``var`` has a special type called ``NoneType``.  Every
 function call is an expression that returns some value, even if at least that
 value belongs to ``NoneType``.
@@ -1005,7 +1006,7 @@ and the third is another string value.
 
 Because functions return values, we can call one function and immediately give
 its return value to another function.  Look at lines 1 and 2 in
-Listing~\ref{code:age_inc} again.  Since casting can be performed on any
+Listing :numref:`%s <age_inc>` again.  Since casting can be performed on any
 expression, we could do both the ``input`` and the ``int`` cast on one line, like
 this.
 
@@ -1219,6 +1220,8 @@ shows how to do this in Python code.
    :linenos:
    :caption: Fidget spinner example
 
+   import math
+
    spinners = int(input("How many spinners do you need? "))
    spins_per_case = int(input("How many spinners come in a case? "))
 
@@ -1226,7 +1229,7 @@ shows how to do this in Python code.
 
    print("You need to order %d cases." % cases)
 
-In line 4 of Listing :numref:`%s <spinner_cases>`, we divide ``spinners`` by
+In line 6 of Listing :numref:`%s <spinner_cases>`, we divide ``spinners`` by
 ``spins_per_case`` to get how many cases we'll need.  But this gives us a
 fractional number potentially.  For example, if we wanted ``18`` spinners and ``12``
 come in a case, that would be ``1.5`` cases, but we can't order one case and then
@@ -1319,7 +1322,7 @@ Because placing a ``#`` symbol at the start of a line hides the code from Python
 another use of comments is to hide old code.  Sometimes, we want to save old
 code without deleting it.  This can occur when we're not sure if new code we're
 trying out is going to work, and so we may not want to lose our old code in case
-we need to go back to it later.  Listing~\ref{code:comment_out} demonstrates
+we need to go back to it later.  Listing :numref:`%s <comment_out>` demonstrates
 this concept.
 
 .. _comment_out:
