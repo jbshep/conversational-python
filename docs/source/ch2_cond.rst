@@ -584,11 +584,11 @@ Exercises
 
       num = float(input("Enter a real number: "))
       if num < 0.0:
-          print("%.2 is negative." % num)
+          print("%.2f is negative." % num)
       else:
           print("The number is 0.0.")
       elif num > 0.0:
-          print("%.2 is positive." % num)
+          print("%.2f is positive." % num)
 
 #. Identify the error in the following code.
 
@@ -598,9 +598,9 @@ Exercises
       if num = 0.0:
           print("The number is 0.0.")
       elif num < 0.0:
-          print("%.2 is negative." % num)
+          print("%.2f is negative." % num)
       else:   
-          print("%.2 is positive." % num)
+          print("%.2f is positive." % num)
 
 #. What is the output of the following code?
 
